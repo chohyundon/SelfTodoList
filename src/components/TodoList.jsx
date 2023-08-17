@@ -1,66 +1,45 @@
 import React, { useState } from "react";
-import styled from "styled-components";
+import AddTodo from "./AddTodo";
+import Todo from "./Todo";
 
-const TodoListBox = styled.div`
-  width: 400px;
-  height: 400px;
-  border: 1px solid;
-  margin-left: auto;
-  margin-right: auto;
-  border-radius: 20px;
-`;
+export default function Todolist({ filter }) {
+  const [todos, setTodos] = useState([
+    { id: 12, text: "밥먹기", status: "active" },
+    { id: 123, text: "밥먹", status: "active" },
+  ]);
 
-const Navbar = styled.div`
-  border-bottom: 1px solid;
-  height: 10%;
-`;
-
-const Content = styled.div`
-  width: 100%;
-`;
-
-const Footer = styled.div`
-  border-top: 1px solid;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 10%;
-`;
-
-const Input = styled.input`
-  width: 200px;
-`;
-
-export default function TodoList() {
-  const [text, setText] = useState("");
-  const [todos, setTodos] = useState([]);
-
-  const handleChange = (e) => {
-    setText(e.target.value);
+  const handleAdd = (text) => {
+    setTodos([...todos, text]);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (text) {
-      setTodos([...todos, text]);
-      setText("");
-    }
+  const handleUpdate = (update) => {
+    setTodos(todos.map((todo) => (todo.id === update.id ? update : todo)));
   };
+
+  const handleDelete = (deleted) => {
+    setTodos(todos.filter((todo) => todo.id === deleted.id));
+  };
+
+  const filtered = getFilter(todos, filter);
 
   return (
-    <TodoListBox>
-      <Navbar></Navbar>
-      {todos.map((item) => (
-        <Content>
-          <p>{item}</p>
-        </Content>
+    <div>
+      {filtered.map((item) => (
+        <Todo
+          key={item.id}
+          todo={item}
+          onUpdate={handleUpdate}
+          onDelete={handleDelete}
+        />
       ))}
-      <Footer>
-        <form onSubmit={handleSubmit}>
-          <Input type="text" name="text" value={text} onChange={handleChange} />
-          <button>Add</button>
-        </form>
-      </Footer>
-    </TodoListBox>
+      <AddTodo onAdd={handleAdd} />
+    </div>
   );
+}
+
+function getFilter(todos, filter) {
+  if (filter === "all") {
+    return todos;
+  }
+  return todos.filter((todo) => todo.status === filter);
 }

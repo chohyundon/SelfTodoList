@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import AddTodo from "./AddTodo";
 import Todo from "./Todo";
 import styled from "styled-components";
@@ -13,15 +13,14 @@ const TodoContent = styled.div`
   flex-direction: column;
   background: ${({ theme }) => theme.background};
   color: ${({ theme }) => theme.foreground};
+  margin-left: auto;
+  margin-right: auto;
 `;
 
 export default function Todolist({ filter }) {
   const { theme, dark } = useContext(DarkModeContext);
 
-  const [todos, setTodos] = useState([
-    { id: 12, text: "밥먹기", status: "active" },
-    { id: 123, text: "밥먹", status: "active" },
-  ]);
+  const [todos, setTodos] = useState(getLocalStorage());
 
   const handleAdd = (text) => {
     setTodos([...todos, text]);
@@ -34,6 +33,10 @@ export default function Todolist({ filter }) {
   const handleDelete = (deleted) => {
     setTodos(todos.filter((todo) => todo.id !== deleted.id));
   };
+
+  useEffect(() => {
+    localStorage.setItem("todos", JSON.stringify(todos));
+  }, [todos]);
 
   const filtered = getFilter(todos, filter);
 
@@ -51,6 +54,11 @@ export default function Todolist({ filter }) {
       <AddTodo onAdd={handleAdd} dark={dark} />
     </TodoContent>
   );
+}
+
+function getLocalStorage() {
+  const todos = localStorage.getItem("todos");
+  return todos ? JSON.parse(todos) : [];
 }
 
 function getFilter(todos, filter) {

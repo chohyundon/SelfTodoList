@@ -1,11 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
+import { DarkModeContext } from "../context/DarkModeContext";
 
 export default function Header({ filters, onChange }) {
+  const { toggleDarkMode, dark } = useContext(DarkModeContext);
+
   return (
-    <div>
-      {filters.map((filter) => (
-        <button onClick={() => onChange(filter)}>{filter}</button>
+    <>
+      <button onClick={toggleDarkMode}>{dark === false ? "🌞" : "🌕"}</button>
+      {filters.map((filter, index) => (
+        <div key={index}>
+          <button onClick={() => onChange(filter)}>{filter}</button>
+        </div>
       ))}
-    </div>
+    </>
   );
 }
